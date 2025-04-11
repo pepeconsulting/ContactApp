@@ -12,6 +12,7 @@ struct ContactAppApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .modelContainer(for: Contact.self)
         }
     }
 }
