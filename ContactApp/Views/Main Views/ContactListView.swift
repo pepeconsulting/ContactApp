@@ -43,6 +43,7 @@ struct ContactListView: View {
     @State private var showMore: Bool = false
     @State private var currentContact: Contact = Contact()
     @State private var isShowingAddContactSheet : Bool = false
+    @State private var selectedFilters: Filter = .none
     
     // Sorted contacts
     var sortedContacts: [Contact] {
@@ -59,10 +60,61 @@ struct ContactListView: View {
             baseContacts
     }
     
+    // Filter and predicate - Advance queries
+    
+    @Query(filter: #Predicate<Contact> {
+        $0.email.contains("@example.com")
+    }) private var contactsWithExampleDomain: [Contact]
+    
+    @Query(filter: #Predicate<Contact> {
+        !$0.phoneNumber.isEmpty
+    }) private var contactsWithPhoneNumbers: [Contact]
+    
+    @Query(filter: #Predicate<Contact> {
+        $0.lastName.starts(with: "A")
+    }) private var contactsStartingWithA: [Contact]
+    
     // Filter contacts
     // TODO: implement filtered contacts
     var filteredContacts: [Contact] {
-        sortedContacts
+        let baseContacts: [Contact]
+        switch selectedSortOrder {
+        case .firstName:
+            baseContacts = contactsByFirstName
+        case .lastName:
+            baseContacts = contactsByLastName
+        case .phoneNumber:
+            baseContacts = contactsByPhoneNumber
+        }
+        
+        let theFilteredContacts: [Contact]
+        switch selectedFilters {
+        case .none:
+            theFilteredContacts = baseContacts
+        case .exampleDomain:
+            theFilteredContacts = contactsWithExampleDomain
+        case .withPhoneNumber:
+            theFilteredContacts = contactsWithPhoneNumbers
+        case .startingWithA:
+            theFilteredContacts = contactsStartingWithA
+        }
+        
+        if searchText.isEmpty {
+            return theFilteredContacts
+        } else {
+            return theFilteredContacts.filter { contact in
+                contact.firstName
+                    .localizedCaseInsensitiveContains(searchText) ||
+                contact.lastName
+                    .localizedCaseInsensitiveContains(searchText) ||
+                contact.phoneNumber
+                    .localizedCaseInsensitiveContains(searchText) ||
+                contact.email
+                    .localizedCaseInsensitiveContains(searchText)
+            }
+        }
+        
+        
     }
     
     
@@ -79,7 +131,7 @@ struct ContactListView: View {
                 )
                 
                 if isAdvanceShown {
-                    Text("TODO: Filter Picker View ")
+                    FilterPickerView(selectedFilter: $selectedFilters)
                 }
                 
                 List {
@@ -118,11 +170,19 @@ struct ContactListView: View {
             })
             .navigationTitle("Contacts")
                 .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            showMore.toggle()
+                        } label : {
+                            Label("Advance", systemImage: showMore ? "text.book.closed" : "book")
+                        }
+                    }
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         Button {
                             isAdvanceShown.toggle()
                             if !isAdvanceShown {
                                 selectedSortOrder = .firstName
+                                selectedFilters = .none
                             }
                         } label: {
                             Label(
