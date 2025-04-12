@@ -45,20 +45,7 @@ struct ContactListView: View {
     @State private var isShowingAddContactSheet : Bool = false
     @State private var selectedFilters: Filter = .none
     
-    // Sorted contacts
-    var sortedContacts: [Contact] {
-        let baseContacts: [Contact]
-        switch selectedSortOrder {
-        case .firstName:
-            baseContacts = contactsByFirstName
-        case .lastName:
-            baseContacts = contactsByLastName
-        case .phoneNumber:
-            baseContacts = contactsByPhoneNumber
-        }
-         return isSortOrderInversed ? baseContacts.reversed() :
-            baseContacts
-    }
+
     
     // Filter and predicate - Advance queries
     
@@ -87,7 +74,7 @@ struct ContactListView: View {
             baseContacts = contactsByPhoneNumber
         }
         
-        let theFilteredContacts: [Contact]
+        var theFilteredContacts: [Contact]
         switch selectedFilters {
         case .none:
             theFilteredContacts = baseContacts
@@ -97,6 +84,10 @@ struct ContactListView: View {
             theFilteredContacts = contactsWithPhoneNumbers
         case .startingWithA:
             theFilteredContacts = contactsStartingWithA
+        }
+        
+        if isSortOrderInversed {
+            theFilteredContacts = theFilteredContacts.reversed()
         }
         
         if searchText.isEmpty {

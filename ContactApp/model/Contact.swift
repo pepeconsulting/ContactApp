@@ -40,14 +40,14 @@ class Contact: Identifiable {
     init(firstName: String = "",
          lastName: String = "",
          email: String = "",
-         phoneNumer: String = "",
+         phoneNumber: String = "",
          address: String = "",
          avatar: Data? = nil)
     {
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
-        self.phoneNumber = phoneNumer
+        self.phoneNumber = phoneNumber
         self.address = address
         self.avatar = avatar
     }

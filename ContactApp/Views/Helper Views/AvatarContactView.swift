@@ -39,7 +39,7 @@ struct AvatarContactView : View {
     AvatarContactView(contact: .init(
         firstName: "John", lastName: "Doe",
         email: "john.doe@example.com",
-        phoneNumer: "123-123-7890",
+        phoneNumber: "123-123-7890",
         address: "123 Main St, Anytown, USA",
         avatar: nil
     )
