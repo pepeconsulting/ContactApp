@@ -8,6 +8,8 @@
 import SwiftUI
 import PhotosUI
 
+
+
 struct ContactFormView: View {
     @Environment(\.dismiss) private var dismiss
     
@@ -22,8 +24,7 @@ struct ContactFormView: View {
     @FocusState private var focusedField: Field?
     
     var isEmailValid : Bool  {
-        // TODO: Implement
-        true
+        contact.email.isValidEmail() && !contact.email.isEmpty
     }
     
     var emailCaption: String {

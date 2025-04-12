@@ -89,6 +89,16 @@ struct ContactListView: View {
                                 currentContact = contact
                                 isShowingAddContactSheet.toggle()
                             }
+                    }.onDelete { indexSet in
+                        indexSet.forEach {index in
+                                modelContext.delete(filteredContacts[index])
+                        }
+                        
+                        do {
+                            try modelContext.save()
+                        } catch {
+                            print("Failed to save context after deletion: \(error)")
+                        }
                     }
   
                 }
@@ -98,8 +108,13 @@ struct ContactListView: View {
                 
             }
             .sheet(isPresented: $isShowingAddContactSheet, content: {
-                Text("ContactFormView")
-                // TODO: insert a new contact and toggle sheet and open ContactFormView
+                ContactFormView(contact: $currentContact) {
+                    newContact in
+                    modelContext.insert(currentContact)
+                    try? modelContext.save()
+                    
+                    isShowingAddContactSheet.toggle()
+                }
             })
             .navigationTitle("Contacts")
                 .toolbar {
