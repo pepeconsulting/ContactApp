@@ -134,25 +134,30 @@ struct ContactListView: View {
                     FilterPickerView(selectedFilter: $selectedFilters)
                 }
                 
-                List {
-                    ForEach(filteredContacts) { contact in
-                        ContactRowItemView(contact: contact, showMore: showMore)
-                            .onTapGesture {
-                                currentContact = contact
-                                isShowingAddContactSheet.toggle()
+                if filteredContacts.isEmpty {
+                    ContentUnavailableView("Enter a new contact",
+                    systemImage: "person.crop.circle.badge.xmark")
+                } else {
+                    List {
+                        ForEach(filteredContacts) { contact in
+                            ContactRowItemView(contact: contact, showMore: showMore)
+                                .onTapGesture {
+                                    currentContact = contact
+                                    isShowingAddContactSheet.toggle()
+                                }
+                        }.onDelete { indexSet in
+                            indexSet.forEach {index in
+                                    modelContext.delete(filteredContacts[index])
                             }
-                    }.onDelete { indexSet in
-                        indexSet.forEach {index in
-                                modelContext.delete(filteredContacts[index])
+                            
+                            do {
+                                try modelContext.save()
+                            } catch {
+                                print("Failed to save context after deletion: \(error)")
+                            }
                         }
-                        
-                        do {
-                            try modelContext.save()
-                        } catch {
-                            print("Failed to save context after deletion: \(error)")
-                        }
+      
                     }
-  
                 }
                 
                 Spacer()

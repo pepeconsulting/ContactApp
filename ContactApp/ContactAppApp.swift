@@ -11,8 +11,7 @@ import SwiftUI
 struct ContactAppApp: App {
     var body: some Scene {
         WindowGroup {
-            ContactListView()
-                .modelContainer(for: Contact.self)
+            SplashScreenView()
         }
     }
 }
